@@ -1,63 +1,85 @@
 #include <iostream>
 #include <functional>
-#include <filament/FilamentAPI.h>
+#include <tuple>
+#include <optional>
+//#include <getopt/getopt.h>
+#include <unistd.h>
+
 #include <filament/Engine.h>
 #include <filament/Material.h>
 #include <filamentapp/Config.h>
-#include <filamentapp/FilamentApp.h>
-#include <utils/EntityManager.h>
+
+#include "demo.hpp"
 
 using namespace std;
 using namespace filament;
 
-class Demo
-{
-    Material* _material;
+tuple<string, string> get_options(int argc, char *argv[]);
 
-public:    
-    void setup(Engine *engine, View *view, Scene *scene)
-    {
-        auto& tcm = engine->getTransformManager();
-        auto& rcm = engine->getRenderableManager();
-        auto& em = utils::EntityManager::get();
-
-        _material = Material::Builder().package(RESOURCES_AIDEFAULTMAT_DATA, RESOURCES_AIDEFAULTMAT_SIZE).build(*engine);
-
-    }
-
-    void cleanup(Engine *engine, View *, Scene *)
-    {
-    }
-
-    void animate(Engine *engine, View *view, double now)
-    {
-    }
-
-    // auto bind_setup()
-    // {
-    //     return bind(&Demo::setup, this, placeholders::_1, placeholders::_2, placeholders::_3);
-    // }
-};
+const string IBL_FOLDER = "../assets/ibl/lightroom_14b";
+const string gltf_path = "../assets/models";
 
 int main(int argc, char **argv)
 {
-    Config config;
 
-    config.title = "PBR demo";
-    config.backend = Engine::Backend::OPENGL;
-    // config.iblDirectory = FilamentApp::getRootAssetsPath() + IBL_FOLDER;
-
-    auto &app = FilamentApp::get();
+    try
     {
-        using namespace std::placeholders;
-        Demo demo;
+        get_options(argc, argv);
+        
+        Config config;
 
-        app.animate(bind(&Demo::animate, &demo, _1, _2, _3));
+        config.title = "PBR demo";
+        config.backend = Engine::Backend::OPENGL;
+        config.iblDirectory = FilamentApp::getRootAssetsPath() + IBL_FOLDER;
 
-        app.run(config,
-                bind(&Demo::setup, &demo, _1, _2, _3),
-                bind(&Demo::cleanup, &demo, _1, _2, _3));
+        auto demo = Demo::create();
+
+        demo->set_gltf((FilamentApp::getRootAssetsPath() + gltf_path).c_str());
+        demo->run(config);
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << e.what() << '\n';
     }
 
     return 0;
+}
+
+tuple<string, string> get_options(int argc, char *argv[])
+{
+    int opt;
+    string model, ibl_path;
+
+    while ((opt = getopt(argc, argv, "du:m:n:w:c:")) != -1)
+    {
+        switch (opt)
+        {
+        case 'i':
+            ibl_path = optarg;
+            break;
+        case 'm':
+            model = optarg;
+            break;
+        // case 'n':
+        //     mnemonic = optarg;
+        //     break;
+        // case 'w':
+        //     waypoint = optarg;
+        //     break;
+        // case 'c':
+        //     chain_id = std::stoi(optarg);
+        //     break;
+        // case 'd':
+        //     distrbuting = true;
+        //     break;
+        case 'h':
+            throw runtime_error("demo -i ibl_path -m model_path");
+            break;
+        case '?':
+        default:
+            break;
+        }
+    }
+
+    return {model, ibl_path};
 }
