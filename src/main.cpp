@@ -2,7 +2,7 @@
 #include <functional>
 #include <tuple>
 #include <optional>
-//#include <getopt/getopt.h>
+#include <format>
 #include <unistd.h>
 
 #include <filament/Engine.h>
@@ -24,17 +24,18 @@ int main(int argc, char **argv)
 
     try
     {
-        get_options(argc, argv);
-        
+        auto [model, ibl_path] = get_options(argc, argv);
+
         Config config;
 
         config.title = "PBR demo";
         config.backend = Engine::Backend::OPENGL;
-        config.iblDirectory = FilamentApp::getRootAssetsPath() + IBL_FOLDER;
+        config.iblDirectory = ibl_path.empty() ? FilamentApp::getRootAssetsPath() + IBL_FOLDER : ibl_path.c_str();
 
         auto demo = Demo::create();
+        auto gltf = model.empty() ? (FilamentApp::getRootAssetsPath() + gltf_path).c_str() : model;
 
-        demo->set_gltf((FilamentApp::getRootAssetsPath() + gltf_path).c_str());
+        demo->set_gltf(gltf);
         demo->run(config);
     }
     catch (const std::exception &e)
@@ -49,8 +50,9 @@ tuple<string, string> get_options(int argc, char *argv[])
 {
     int opt;
     string model, ibl_path;
+    string usage = "usage : \n\tdemo -i ibl_path -m model_path";
 
-    while ((opt = getopt(argc, argv, "du:m:n:w:c:")) != -1)
+    while ((opt = getopt(argc, argv, "i:m:h")) != -1)
     {
         switch (opt)
         {
@@ -60,22 +62,12 @@ tuple<string, string> get_options(int argc, char *argv[])
         case 'm':
             model = optarg;
             break;
-        // case 'n':
-        //     mnemonic = optarg;
-        //     break;
-        // case 'w':
-        //     waypoint = optarg;
-        //     break;
-        // case 'c':
-        //     chain_id = std::stoi(optarg);
-        //     break;
-        // case 'd':
-        //     distrbuting = true;
-        //     break;
         case 'h':
-            throw runtime_error("demo -i ibl_path -m model_path");
+            throw runtime_error(usage);
             break;
         case '?':
+            throw runtime_error(usage);
+            break;
         default:
             break;
         }
