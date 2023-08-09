@@ -73,7 +73,7 @@ class DemoImp : public Demo
 
         load_resources(_gltf_path);
 
-        _viewer->setAsset(_asset);
+        _viewer->setAsset(_asset, _instance);
 
         // _viewer->setUiCallback([this, scene, view, engine](){
         //     float progress = this->_res_loader->asyncGetLoadProgress();
@@ -198,8 +198,8 @@ private:
         _asset->releaseSourceData();
 
         // Enable stencil writes on all material instances.
-        const size_t matInstanceCount = _asset->getMaterialInstanceCount();
-        MaterialInstance *const *const instances = _asset->getMaterialInstances();
+        const size_t matInstanceCount = instance->getMaterialInstanceCount();
+        MaterialInstance* const* const instances = instance->getMaterialInstances();
         for (int mi = 0; mi < matInstanceCount; mi++)
         {
             instances[mi]->setStencilWrite(true);
