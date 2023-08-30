@@ -29,7 +29,7 @@ int main(int argc, char **argv)
         Config config;
 
         config.title = "PBR demo";
-        config.backend = Engine::Backend::OPENGL;
+        //config.backend = Engine::Backend::OPENGL;
         config.iblDirectory = ibl_path.empty() ? FilamentApp::getRootAssetsPath() + IBL_FOLDER : ibl_path.c_str();
 
         auto demo = Demo::create();

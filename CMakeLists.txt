@@ -16,11 +16,12 @@ add_executable(demo ${SRC})
 
 target_link_libraries(demo
                     #-static-libstdc++ -static-libgcc 
-                    #filament filamat filamat_lite filagui gltfio                                    
-                    #filamentapp filamentapp-resources                                     
-                    #filament backend camutils ibl  gltfio_core utils
-                    #filament-iblprefilter filabridge filaflat ktxreader bluegl bluevk vkshaders smol-v image viewer
-                    filament-all filament filaflat gltfio gltfio_core utils
+                    filament filamat filagui filameshio gltfio_core gltfio                                    
+                    filamentapp filamentapp-resources dracodec
+                    shaders basis_transcoder geometry viewer  meshoptimizer                                
+                    filament backend camutils ibl zstd  utils
+                    filament-iblprefilter filabridge filaflat ktxreader bluegl bluevk vkshaders smol-v image viewer
+                    #filament-all filament filaflat gltfio gltfio_core utils
                     sdl2 stb imgui
                     )
 
