@@ -22,7 +22,7 @@ target_link_libraries(demo
                     filament backend camutils ibl zstd  utils
                     filament-iblprefilter filabridge filaflat ktxreader bluegl bluevk vkshaders smol-v image viewer
                     #filament-all filament filaflat gltfio gltfio_core utils
-                    sdl2 stb imgui
+                    SDL2 stb imgui
                     )
 
 install(TARGETS demo)
