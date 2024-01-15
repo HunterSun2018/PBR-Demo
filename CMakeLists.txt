@@ -15,12 +15,14 @@ link_directories(../filament/out/release/filament/lib/x86_64 ../../../fmt/build/
 add_executable(demo ${SRC})
 
 target_link_libraries(demo
-                    #-static-libstdc++ -static-libgcc 
-                    filament filamat filagui filameshio gltfio_core gltfio                                    
+                    #-static-libstdc++ -static-libgcc                     
+                    filament 
+                    filamat filagui filameshio gltfio_core gltfio                                    
                     filamentapp filamentapp-resources dracodec
                     shaders basis_transcoder geometry viewer  meshoptimizer                                
-                    filament backend camutils ibl zstd  utils
+                    backend camutils ibl zstd  utils
                     filament-iblprefilter filabridge filaflat ktxreader bluegl bluevk vkshaders smol-v image viewer
+                    filament
                     #filament-all filament filaflat gltfio gltfio_core utils
                     SDL2 stb imgui
                     )

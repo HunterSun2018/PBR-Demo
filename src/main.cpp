@@ -14,7 +14,7 @@
 using namespace std;
 using namespace filament;
 
-tuple<string, string> get_options(int argc, char *argv[]);
+tuple<string, string, backend::Backend> get_options(int argc, char *argv[]);
 
 const string IBL_FOLDER = "../assets/ibl/lightroom_14b";
 const string gltf_path = "../assets/models";
@@ -24,12 +24,12 @@ int main(int argc, char **argv)
 
     try
     {
-        auto [model, ibl_path] = get_options(argc, argv);
+        auto [model, ibl_path, backend] = get_options(argc, argv);
 
         Config config;
 
         config.title = "PBR demo";
-        //config.backend = Engine::Backend::OPENGL;
+        config.backend = backend;
         config.iblDirectory = ibl_path.empty() ? FilamentApp::getRootAssetsPath() + IBL_FOLDER : ibl_path.c_str();
 
         auto demo = Demo::create();
@@ -46,13 +46,14 @@ int main(int argc, char **argv)
     return 0;
 }
 
-tuple<string, string> get_options(int argc, char *argv[])
+tuple<string, string, backend::Backend> get_options(int argc, char *argv[])
 {
     int opt;
     string model, ibl_path;
-    string usage = "usage : \n\tdemo -i ibl_path -m model_path";
+    backend::Backend backend = Engine::Backend::OPENGL;
+    string usage = "usage : \n\tdemo -i ibl_path -m model_path -b [opengl|vulkan]";
 
-    while ((opt = getopt(argc, argv, "i:m:h")) != -1)
+    while ((opt = getopt(argc, argv, "i:m:b:h")) != -1)
     {
         switch (opt)
         {
@@ -62,16 +63,17 @@ tuple<string, string> get_options(int argc, char *argv[])
         case 'm':
             model = optarg;
             break;
+        case 'b':
+            backend = string("vulkan") == optarg ? Engine::Backend::VULKAN : Engine::Backend::OPENGL;
+            break;
         case 'h':
-            throw runtime_error(usage);
-            break;
         case '?':
-            throw runtime_error(usage);
-            break;
+            cout << usage << endl;                    
+            exit(0);
         default:
             break;
         }
     }
 
-    return {model, ibl_path};
+    return {model, ibl_path, backend};在
 }
