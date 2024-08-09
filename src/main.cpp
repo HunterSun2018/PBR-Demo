@@ -75,5 +75,5 @@ tuple<string, string, backend::Backend> get_options(int argc, char *argv[])
         }
     }
 
-    return {model, ibl_path, backend};在
+    return {model, ibl_path, backend};
 }
